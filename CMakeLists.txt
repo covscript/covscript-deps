@@ -12,8 +12,8 @@ if (APPLE)
         libucontext/arch/x86_64/setcontext.S
         libucontext/arch/x86_64/swapcontext.S
         libucontext/arch/x86_64/trampoline.c)
-    target_compile_options(ucontext PUBLIC -target x86_64-apple-macos10.12)
-    target_link_options(ucontext PUBLIC -target x86_64-apple-macos10.12)
+    target_compile_options(ucontext PUBLIC -target x86_64-apple-macos)
+    target_link_options(ucontext PUBLIC -target x86_64-apple-macos)
     target_include_directories(ucontext PRIVATE libucontext/arch/common)
     target_include_directories(ucontext PUBLIC libucontext/include libucontext/arch/x86_64/include)
 
@@ -24,8 +24,8 @@ if (APPLE)
         libucontext/arch/aarch64/setcontext.S
         libucontext/arch/aarch64/swapcontext.S
         libucontext/arch/aarch64/trampoline.c)
-    target_compile_options(ucontext_arm PUBLIC -target arm64-apple-macos11)
-    target_link_options(ucontext_arm PUBLIC -target arm64-apple-macos11)
+    target_compile_options(ucontext_arm PUBLIC -target arm64-apple-macos)
+    target_link_options(ucontext_arm PUBLIC -target arm64-apple-macos)
     target_include_directories(ucontext_arm PRIVATE libucontext/arch/common)
     target_include_directories(ucontext_arm PUBLIC libucontext/include libucontext/arch/aarch64/include)
 elseif (UNIX)
