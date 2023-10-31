@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.10)
 
 project(covscript-deps)
 
 enable_language(C ASM)
 
 if (APPLE)
+    set(CMAKE_OSX_ARCHITECTURES x86_64)
     # x86 version of ucontext
     add_library(ucontext STATIC
         libucontext/arch/x86_64/getcontext.S
@@ -17,6 +18,7 @@ if (APPLE)
     target_include_directories(ucontext PRIVATE libucontext/arch/common)
     target_include_directories(ucontext PUBLIC libucontext/include libucontext/arch/x86_64/include)
 
+    set(CMAKE_OSX_ARCHITECTURES arm64)
     # ARM version of ucontext
     add_library(ucontext_arm STATIC
         libucontext/arch/aarch64/getcontext.S
