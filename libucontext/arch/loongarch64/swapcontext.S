@@ -39,6 +39,7 @@ FUNC(libucontext_swapcontext)
 	st.d	$s8, $t5, REG_OFFSET(31)
 
 	st.d	$a3, $t5, REG_OFFSET(3)
+	st.d	$zero, $t5, REG_OFFSET(4)
 	st.d	$a4, $t5, REG_OFFSET(22)
 	st.d	$ra, $t5, REG_OFFSET(1)
 
@@ -77,7 +78,7 @@ FUNC(libucontext_swapcontext)
 	ld.d	$t8, $t4, (MCONTEXT_PC)
 
 	jr	$t8
-	move	$v0, $zero
+	move	$a0, $zero
 
 fail:
 	la.global	$t8, exit
@@ -85,5 +86,5 @@ fail:
 	POP_FRAME(libucontext_swapcontext)
 
 	jirl	$ra, $t8, 0
-	move	$v0, $zero
+	move	$a0, $zero
 END(libucontext_swapcontext)
