@@ -3,7 +3,7 @@
 
 typedef unsigned long libucontext_greg_t, libucontext_gregset_t[16];
 typedef unsigned long libucontext_freg_t, libucontext_fpregset_t[16];
-typedef struct sigcontext {
+typedef struct {
 	unsigned long oldmask;
 	unsigned long gregs[16];
 	unsigned long pc, pr, sr;

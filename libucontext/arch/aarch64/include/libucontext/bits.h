@@ -10,7 +10,7 @@ typedef struct {
 	unsigned int fpcr;
 } libucontext_fpregset_t;
 
-typedef struct sigcontext {
+typedef struct {
 	unsigned long fault_address;
 	unsigned long regs[31];
 	unsigned long sp, pc, pstate;
