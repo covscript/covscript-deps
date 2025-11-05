@@ -23,10 +23,29 @@ if (APPLE)
     target_include_directories(ucontext_arm PRIVATE libucontext/arch/common)
     target_include_directories(ucontext_arm PUBLIC libucontext/include libucontext/arch/aarch64/include)
 elseif (UNIX)
-    # Build system specified libucontext
-    file(GLOB UCONTEXT_FILES "libucontext/arch/${CMAKE_SYSTEM_PROCESSOR}/*")
+    if(NOT DEFINED CMAKE_SYSTEM_PROCESSOR OR CMAKE_SYSTEM_PROCESSOR STREQUAL "")
+        execute_process(
+            COMMAND uname -p
+            OUTPUT_VARIABLE CMAKE_SYSTEM_PROCESSOR
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+    endif()
+    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64")
+        set(CMAKE_SYSTEM_PROCESSOR "x86_64")
+    endif()
+    message(STATUS "Using processor: ${CMAKE_SYSTEM_PROCESSOR}")
+    set(UCONTEXT_DIR "libucontext/arch/${CMAKE_SYSTEM_PROCESSOR}")
+    if(NOT EXISTS ${UCONTEXT_DIR})
+        message(FATAL_ERROR "Directory ${UCONTEXT_DIR} does not exist")
+    endif()
+
+    file(GLOB UCONTEXT_FILES "${UCONTEXT_DIR}/*")
     add_library(ucontext OBJECT ${UCONTEXT_FILES})
-    target_compile_options(ucontext PUBLIC -Wno-unknown-attributes)
+    target_compile_options(ucontext PUBLIC -Wno-unknown-attributes -fPIC)
     target_include_directories(ucontext PRIVATE libucontext/arch/common)
-    target_include_directories(ucontext PUBLIC libucontext/include libucontext/arch/${CMAKE_SYSTEM_PROCESSOR}/include)
+    target_include_directories(ucontext PUBLIC
+        libucontext/include
+        "${UCONTEXT_DIR}/include"
+    )
 endif ()
