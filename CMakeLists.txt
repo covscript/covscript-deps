@@ -4,10 +4,16 @@ project(covscript-deps)
 
 enable_language(C ASM)
 
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
 if (APPLE)
     set(CMAKE_OSX_ARCHITECTURES arm64)
     # ARM version of ucontext
-    file(GLOB UCONTEXT_FILES "libucontext/arch/aarch64/*")
+    file(GLOB UCONTEXT_FILES CONFIGURE_DEPENDS
+        "libucontext/arch/aarch64/*.c"
+        "libucontext/arch/aarch64/*.S"
+    )
     add_library(ucontext OBJECT ${UCONTEXT_FILES})
     target_compile_options(ucontext PUBLIC -target arm64-apple-macos -Wno-unknown-attributes)
     target_link_options(ucontext PUBLIC -target arm64-apple-macos)
@@ -16,7 +22,10 @@ if (APPLE)
 
     set(CMAKE_OSX_ARCHITECTURES x86_64)
     # x86 version of ucontext
-    file(GLOB UCONTEXT_FILES "libucontext/arch/x86_64/*")
+    file(GLOB UCONTEXT_FILES CONFIGURE_DEPENDS
+        "libucontext/arch/x86_64/*.c"
+        "libucontext/arch/x86_64/*.S"
+    )
     add_library(ucontext_x86 OBJECT ${UCONTEXT_FILES})
     target_compile_options(ucontext_x86 PUBLIC -target x86_64-apple-macos -Wno-unknown-attributes)
     target_link_options(ucontext_x86 PUBLIC -target x86_64-apple-macos)
@@ -33,16 +42,22 @@ elseif (UNIX)
     endif()
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64")
         set(CMAKE_SYSTEM_PROCESSOR "x86_64")
+    elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+        set(CMAKE_SYSTEM_PROCESSOR "aarch64")
     endif()
     message(STATUS "Using processor: ${CMAKE_SYSTEM_PROCESSOR}")
     set(UCONTEXT_DIR "libucontext/arch/${CMAKE_SYSTEM_PROCESSOR}")
-    file(GLOB UCONTEXT_FILES "${UCONTEXT_DIR}/*")
+    file(GLOB UCONTEXT_FILES CONFIGURE_DEPENDS
+        "${UCONTEXT_DIR}/*.c"
+        "${UCONTEXT_DIR}/*.S"
+    )
     if(UCONTEXT_FILES STREQUAL "")
         message(FATAL_ERROR "Could not found corresponding libucontext implementation for arch ${CMAKE_SYSTEM_PROCESSOR}")
     endif()
 
     add_library(ucontext OBJECT ${UCONTEXT_FILES})
-    target_compile_options(ucontext PUBLIC -Wno-unknown-attributes -fPIC)
+    target_compile_options(ucontext PUBLIC -Wno-unknown-attributes)
+    set_target_properties(ucontext PROPERTIES POSITION_INDEPENDENT_CODE ON)
     target_include_directories(ucontext PRIVATE libucontext/arch/common)
     target_include_directories(ucontext PUBLIC
         libucontext/include
